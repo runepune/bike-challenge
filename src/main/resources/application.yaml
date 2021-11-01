@@ -2,7 +2,7 @@ bike.challenge:
   base-url: "https://gbfs.urbansharing.com/oslobysykkel.no"
   station-info: "/station_information.json"
   station-status: "/station_status.json"
-
+  company-info: "runepune-bike_challenge"
 spring:
   jackson:
     property-naming-strategy: SNAKE_CASE

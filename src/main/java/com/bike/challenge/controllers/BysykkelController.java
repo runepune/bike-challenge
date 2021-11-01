@@ -36,6 +36,9 @@ public class BysykkelController {
     private String STATION_INFO;
     @Value("${bike.challenge.station-status}")
     private String STATION_STATUS;
+    @Value("${bike.challenge.company-info}")
+    private String COMPANY_INFO;
+
 
     private RestTemplate restTemplate;
     private HttpEntity entity;
@@ -48,7 +51,7 @@ public class BysykkelController {
 
         //The API vendor wants to receive info about who's fetching the data
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Client-Identifier", "runepune");
+        headers.set("Client-Identifier", COMPANY_INFO);
         entity = new HttpEntity(headers);
     }
 
