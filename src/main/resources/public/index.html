@@ -1,0 +1,64 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Load required Bootstrap and BootstrapVue CSS -->
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+</head>
+<body>
+<div class="container-fluid">
+    <div id="contents-main">
+        <div class="lead">
+            <strong>Oslo Origo</strong>
+            <!-- Orig is here
+            <img src="https://motherboard-images.vice.com/content-images/contentimage/26327/1444070256569233.gif"/> -->
+            <img src="under_construction.gif" height="51" width="574"/>
+            <strong>Bike challenge</strong>
+        </div>
+        <div id="contents">
+            <div class="accordion" role="tablist" v-for="(station, index) in bike_data">
+                <b-card no-body class="mb-1">
+                    <b-card-header header-tag="header" class="p-1" role="tab">
+                        <b-button v-b-toggle="'accordion-' + index" variant="info">{{station.name}}</b-button>
+                    </b-card-header>
+                    <b-collapse :id="'accordion-' + index" role="tabpanel">
+                        <b-card-body>
+                            <b-card-text>Adresse: {{ station.address }}</b-card-text>
+                            <b-card-text>Kapasitet: {{station.capacity}}</b-card-text>
+                            <b-card-text>Ledige sykler: {{station.num_bikes_available}}</b-card-text>
+                            <b-card-text>Ledige låser: {{station.num_docks_available}}</b-card-text>
+                        </b-card-body>
+                    </b-collapse>
+                </b-card>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load Vue followed by BootstrapVue -->
+<script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+
+<!-- Initialize & fetch merged bike data from spring-boot  -->
+<script>
+    var app = new Vue({
+        el: '#contents',
+        data: {
+            bike_data: {}
+        },
+        created() {
+            fetch('/challenge')
+                .then(response => response.json())      //convert to json
+                .then(json => this.bike_data = json)    //set station array
+                .catch(err => console.log('Request Failed', err)); // Catch errors, should do more but have no time...
+        }
+    });
+</script>
+</body>
+</html>
+
