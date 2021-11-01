@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,7 +66,7 @@ public class BysykkelController {
 
     private ResponseEntity<Information> getStationInformation() {
         String url = BASE_URL + STATION_INFO;
-        //Fetch StationInfo
+        //Fetch StationInfo & ErrorHandler will handle errors
         ResponseEntity<Information> response = restTemplate.exchange(url, GET, entity, Information.class);
 
         return response;
@@ -73,7 +74,7 @@ public class BysykkelController {
 
     private ResponseEntity<Status> getStationStatus() {
         String url = BASE_URL + STATION_STATUS;
-        //Fetch StationStatus
+        //Fetch StationStatus & ErrorHandler will handle errors
         ResponseEntity<Status> response = restTemplate.exchange(url, GET, entity, Status.class);
 
         return response;
@@ -81,8 +82,27 @@ public class BysykkelController {
 
     private List<BikeData> mergeData(Information info, Status status) {
         //Uses map for merging on id field
-        Map<Long, StationInfo> infoMap = info.getData().getStations().stream().collect(Collectors.toMap(StationInfo::getStationId, stationInfo -> {return stationInfo;}));
-        Map<Long, StationStatus> statusMap = status.getData().getStations().stream().collect(Collectors.toMap(StationStatus::getStationId, stationStatus -> {return stationStatus;}));
+        Map<Long, StationInfo> infoMap;
+        if (info != null && info.getData() != null && info.getData().getStations() != null) {
+            infoMap = info.getData().getStations().stream().collect(Collectors.toMap(StationInfo::getStationId, stationInfo -> {
+                return stationInfo;
+            }));
+        } else {
+            //Here we could throw an application exception to notify the user of missing data...
+            //Just creates an empty one for now
+            infoMap = new HashMap<>();
+        }
+
+        Map<Long, StationStatus> statusMap;
+        if (status != null && status.getData() != null && status.getData().getStations() != null) {
+            statusMap = status.getData().getStations().stream().collect(Collectors.toMap(StationStatus::getStationId, stationStatus -> {
+                return stationStatus;
+            }));
+        } else {
+            //Here we could throw an application exception to notify the user of missing data...
+            //Just creates an empty one for now
+            statusMap = new HashMap<>();
+        }
 
         //Merge the two data structures to our internal API
         List<BikeData> bikeDatas = new ArrayList<>();
